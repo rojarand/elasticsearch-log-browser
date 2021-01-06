@@ -17,12 +17,8 @@ class FakeAppRepository implements Repository {
 }
 
 class AppSettingsRepositoryStub extends AppSettingsRepository {
-  AppSettingsRepositoryStub() : super.withCustomPrefix("+");
-
-  @override
-  Repository makeRepository() {
-    return FakeAppRepository();
-  }
+  AppSettingsRepositoryStub()
+      : super.customized(prefix:'+', repository: FakeAppRepository());
 }
 
 void main() {

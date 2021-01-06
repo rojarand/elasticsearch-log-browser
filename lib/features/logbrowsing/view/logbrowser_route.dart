@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:elastic_log_browser/features/logbrowsing/viewmodel/log_store.dart';
 import 'package:flutter/material.dart';
 import 'package:elastic_log_browser/common/ui/colors.dart';
 import 'package:elastic_log_browser/common/ui/dialogs/text_alert.dart';

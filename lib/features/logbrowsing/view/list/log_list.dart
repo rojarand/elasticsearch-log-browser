@@ -1,3 +1,4 @@
+import 'package:elastic_log_browser/features/logbrowsing/viewmodel/log_store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:elastic_log_browser/common/loading_status_change_notifier.dart';

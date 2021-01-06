@@ -24,12 +24,16 @@ abstract class SettingsViewModel {
 }
 
 class SettingsViewModelImpl implements SettingsViewModel {
-  var _appSettingsController = StreamController<AppSettings>.broadcast();
-  var _settingsManagementEventStreamController =
-      StreamController<SettingsManagementEvent>.broadcast();
 
   final LoadingStatusChangeNotifier _loadingStatusChangeNotifier =
       LoadingStatusChangeNotifier();
+
+  AppSettingsRepository get _repo => AppSettingsRepository();
+
+  var _appSettingsController = StreamController<AppSettings>.broadcast();
+
+  var _settingsManagementEventStreamController =
+      StreamController<SettingsManagementEvent>.broadcast();
 
   LoadingStatusChangeNotifier get loadingStatusChangeNotifier =>
       _loadingStatusChangeNotifier;
@@ -42,8 +46,6 @@ class SettingsViewModelImpl implements SettingsViewModel {
   @override
   Stream<SettingsManagementEvent> get settingsManagementEventStream =>
       _settingsManagementEventStreamController.stream;
-
-  AppSettingsRepository get _repo => AppSettingsRepository();
 
   @override
   void dispose() {
