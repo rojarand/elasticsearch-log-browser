@@ -25,5 +25,9 @@ ios/.symlink*
 .idea*
 curl
 ios/Flutter/Flutter.framework
+ios/Flutter/Generated
+
+ios/Flutter/Generated.xcconfig
+ios/Flutter/flutter_export_environment.sh
 
 *.swp
