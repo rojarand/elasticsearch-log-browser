@@ -16,48 +16,26 @@ import 'package:elastic_log_browser/utlis/string_utils.dart';
 
 import '../model/es_doc_request.dart';
 import '../model/log_entry.dart';
+import 'log_store.dart';
 
-class LogStore extends ChangeNotifier {
-  final List<LogEntry> _logEntries = List();
-
-  List<LogEntry> get logEntries => _logEntries;
-
-  void removeAllLogs() {
-    _logEntries.clear();
-    notifyListeners();
-  }
-
-  void addAll(List<LogEntry> logs) {
-    _logEntries.addAll(logs);
-    notifyListeners();
-  }
-
-  LogEntry logAt(int index) {
-    return _logEntries[index];
-  }
-
-  int get count => _logEntries.length;
-}
 
 class LogsViewModel extends ChangeNotifier {
-  FilterWidgetParameters filterWidgetParameters;
 
-  final LogStore _logs = LogStore();
-
-  LogStore get logs => _logs;
   AppSettings _appSettings;
-
+  FilterWidgetParameters _filterWidgetParameters;
   bool _isLoadingInProgress = false;
+  final LogStore _logs = LogStore();
+  
+  final StreamController _logBrowsingEventNotifier =
+      StreamController<LogBrowsingEvent>();
 
   final LoadingStatusChangeNotifier _loadingStatusChangeNotifier =
       LoadingStatusChangeNotifier();
 
+  LogStore get logs => _logs;
+
   LoadingStatusChangeNotifier get loadingStatusChangeNotifier =>
       _loadingStatusChangeNotifier;
-
-  final StreamController _logBrowsingEventNotifier =
-      StreamController<LogBrowsingEvent>();
-
   StreamController get logBrowsingEventNotifier => _logBrowsingEventNotifier;
 
   int get numberOfLogs => _logs.count;
@@ -73,11 +51,11 @@ class LogsViewModel extends ChangeNotifier {
   }
 
   Future<void> _initFilterParameters() async {
-    filterWidgetParameters = _defaultFilterParameters();
+    _filterWidgetParameters = _defaultFilterParameters();
     AppSettings appSettings = await AppSettingsRepository().load();
-    filterWidgetParameters.severityVisible =
+    _filterWidgetParameters.severityVisible =
         !nullOrEmpty(appSettings.severityFieldName);
-    _filterWidgetParametersController.add(filterWidgetParameters);
+    _filterWidgetParametersController.add(_filterWidgetParameters);
   }
 
   @override
@@ -96,7 +74,7 @@ class LogsViewModel extends ChangeNotifier {
   }
 
   void filterParamsChanged(FilterWidgetParameters newFilterSettings) {
-    filterWidgetParameters = newFilterSettings;
+    _filterWidgetParameters = newFilterSettings;
   }
 
   static FilterWidgetParameters _defaultFilterParameters() {
@@ -138,12 +116,12 @@ class LogsViewModel extends ChangeNotifier {
 
   void onSettingsMayHaveChanged() async {
     AppSettings newAppSettings = await AppSettingsRepository().load();
-    bool actualSeverityVisibility = filterWidgetParameters.severityVisible;
+    bool actualSeverityVisibility = _filterWidgetParameters.severityVisible;
     bool expectedSeverityVisibility =
         !nullOrEmpty(newAppSettings.severityFieldName);
     if (actualSeverityVisibility != expectedSeverityVisibility) {
-      filterWidgetParameters.severityVisible = expectedSeverityVisibility;
-      _filterWidgetParametersController.add(filterWidgetParameters);
+      _filterWidgetParameters.severityVisible = expectedSeverityVisibility;
+      _filterWidgetParametersController.add(_filterWidgetParameters);
     }
     _reloadIfSettingsChanged(newAppSettings);
   }
@@ -186,7 +164,7 @@ class LogsViewModel extends ChangeNotifier {
 
   EsQueryParameters _makeQueryParameters(EsQueryMapping queryMapping) {
     Range range = Range(begin: this.numberOfLogs, length: 10);
-    EsQueryFiltering queryFiltering = _makeQueryFiltering(filterWidgetParameters, range);
+    EsQueryFiltering queryFiltering = _makeQueryFiltering(_filterWidgetParameters, range);
     return EsQueryParameters(queryMapping, queryFiltering);
   }
 

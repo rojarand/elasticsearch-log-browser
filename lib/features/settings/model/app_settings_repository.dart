@@ -31,17 +31,18 @@ class AppSettingsRepository {
   Repository _repository;
 
   AppSettingsRepository() {
-    _prefix = "_";
-    _repository = makeRepository();
+    _prefix = '_';
+    _repository = DefaultRepository();
   }
 
   AppSettingsRepository.withCustomPrefix(String prefix) {
     this._prefix = prefix;
-    _repository = makeRepository();
+    _repository = DefaultRepository();
   }
 
-  Repository makeRepository() {
-    return DefaultRepository();
+  AppSettingsRepository.customized({String prefix, Repository repository}) {
+    this._prefix = prefix;
+    _repository = repository;
   }
 
   Future<AppSettings> load() async {
